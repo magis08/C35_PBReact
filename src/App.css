@@ -1,0 +1,192 @@
+/* Main View */
+.container {
+  padding: 15% 25%;
+}
+
+/* Top Bar */
+
+input[type=text] {
+  width: calc(100% - 50px);
+  display: inline-block;
+  margin: 8px 0px;
+  padding: 8px 8px;
+  border-radius: 3px;
+  border: 1px solid black;
+}
+
+.btn1 {
+  background-color: #ad793e;
+  border: none;
+  border-radius: 2px;
+  padding: 9px 10px;
+  margin: 9px;
+}
+
+.barPosition {
+  display: flex;
+  flex-direction: row;
+}
+
+/* Card Board */
+.board {
+  display: flex;
+  flex-wrap: wrap; /* Agar kartu berpindah ke baris baru */
+  justify-content: center; /* Menyelaraskan kartu ke tengah */
+  gap: 10px; /* Jarak antar kartu */
+  max-width: calc(5 * 350px + 4 * 10px); /* Maksimum 5 kartu per baris */
+  margin: 0 auto; /* Agar kartu berada di tengah */
+}
+
+/* User Card */
+
+.cardPosition {
+  display: flex;
+  flex-direction: row;
+}
+
+.userCard {
+  flex: 0 0 350px; /* Lebar kartu tetap 250px */
+  max-width: 350px; /* Pastikan ukuran maksimum tetap 250px */
+  box-sizing: border-box; /* Hindari padding/margin memengaruhi ukuran total */
+  height: auto; /* Biarkan tinggi menyesuaikan isi */
+  background-color: #c3c3c3;
+  border: 1px solid black;
+  border-radius: 3px;
+  margin: 0;
+  overflow: hidden;
+}
+
+.list {
+  margin-left: 10px;
+  margin-top: 10px;
+  padding-left: 1px;
+}
+
+.list2 {
+  width: 50%;
+  margin-left: 10px;
+  margin-top: 10px;
+  padding-left: 10px;
+}
+
+input[id=name],[id=phone] {
+  width: 90%;
+  padding: 3px;
+}
+
+/* User Avatar*/
+
+img {
+  border-radius: 50%;
+  width: 90px;
+  height: 90px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+
+
+/* User Item */
+p {
+  margin: 7px 0px;
+  word-wrap: break-word;
+  font-size: 14px;
+}
+
+.btn3 {
+  margin-top: 15px;
+}
+
+/* Add User */
+.addContainer {
+  margin-top: 20px;
+}
+
+.add {
+  padding-top: 20px;
+  margin: auto;
+  width: 40%;
+}
+
+input[name=add] {
+  width: 100%;
+  display: inline-block;
+  margin: 4px 0px;
+  padding: 12px 0px;
+  padding-left: 10px;
+  border-radius: 3px;
+  border: 1px solid black;
+  box-sizing: border-box;
+}
+
+.addButton {
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn2 {
+  width: 49%;
+  background-color: #ad793e;
+  border: none;
+  border-radius: 2px;
+  padding: 12px 0px;
+  color: white;
+}
+
+.form1 {
+  justify-content: center;
+}
+
+.avatar{
+  display: flex;
+  flex-direction: column;
+}
+
+.foot2 {
+  background-color: #f2f2f2;
+  padding: 10px 15px;
+  border: 1px solid #dee2e6;
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+}
+
+.body {
+  background-color: #ffffff;
+  padding: 10px 15px;
+  border: 1px solid #dee2e6;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+}
+
+.input-control {
+  display: block;
+  width: 100%;
+  font-size: 1rem;
+  color: #495057;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.btnAva {
+  background-color: #ad793e;
+  border: none;
+  border-radius: 4px;
+  padding: 10px;
+  color: white;
+  margin-right: 8px;
+}
+
+@media (max-width: 1300px) {
+  .board {
+    max-width: 100%;
+    justify-content: center; /* Agar kartu tersebar merata */
+    gap: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .userCard {
+    flex: 0 0 100%; /* Kartu full width untuk layar kecil */
+  }
+}
