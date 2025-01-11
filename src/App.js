@@ -27,7 +27,7 @@ const App = () => {
           keyword,
           sortBy: 'name',
           order: sort === 'asc' ? 'ASC' : 'DESC',
-          limit: 20,
+          limit: 5,
           page: newPage,
         },
       });
