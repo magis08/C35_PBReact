@@ -83,7 +83,7 @@ const App = () => {
     if (page > 1) {
       readData(page);
     }
-  }, [page]);  
+  }, [page]);
 
   useEffect(() => {
     setPage(1);
@@ -122,14 +122,9 @@ const App = () => {
             }
             return user;
           });
-
-          return updatedUsers.sort((a, b) => {
-            if (sort === 'asc') {
-              return a.name.localeCompare(b.name);
-            } else {
-              return b.name.localeCompare(a.name);
-            }
-          });
+          return updatedUsers
+            .sort((a, b) => sort === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name))
+            .filter(user => user.name.toLowerCase().includes(keyword.toLowerCase()));
         });
       })
       .catch((err) => {
