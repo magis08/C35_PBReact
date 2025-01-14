@@ -39,11 +39,13 @@ const App = () => {
 
       setTotalPage(totalPages);
 
-      if (newPage === 1) {
-        setUsers(data);
-      } else {
-        setUsers((prevUsers) => [...prevUsers, ...data]);
-      }
+      setUsers((prevUsers) => {
+        if (newPage === 1) {
+          return data;
+        } else {
+          return [...prevUsers, ...data];
+        }
+      });
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -54,12 +56,9 @@ const App = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        if (entries[0].isIntersecting && !loading && page <= totalPage) {
           const newPage = page + 1;
-          if (newPage <= totalPage) {
-            setPage(newPage);
-            readData(newPage);
-          }
+          setPage(newPage);
         }
       },
       {
@@ -78,11 +77,15 @@ const App = () => {
       }
     }
 
-  }, [page, totalPage, loading]);
+  }, [loading, page, totalPage]);
 
   useEffect(() => {
-    console.log('sort order:', sort);
-    setUsers([]);
+    if (page > 1) {
+      readData(page);
+    }
+  }, [page]);  
+
+  useEffect(() => {
     setPage(1);
     readData(1);
   }, [keyword, sort]);
@@ -95,14 +98,9 @@ const App = () => {
 
         setUsers((prevUsers) => {
           const updatedUsers = [newUser, ...prevUsers];
-
-          return updatedUsers.sort((a, b) => {
-            if (sort === 'asc') {
-              return a.name.localeCompare(b.name);
-            } else {
-              return b.name.localeCompare(a.name);
-            }
-          }).filter((user) => user.name.toLowerCase().includes(keyword.toLowerCase()));
+          return updatedUsers
+            .sort((a, b) => sort === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name))
+            .filter(user => user.name.toLowerCase().includes(keyword.toLowerCase()));
         });
       })
       .catch(() => {
@@ -195,7 +193,3 @@ const App = () => {
 };
 
 export default App;
-
-// local storage, session storage
-// add dan edit kalau lagi sorting atau searching harus mempengaruhi
-// pagination pakai observer
