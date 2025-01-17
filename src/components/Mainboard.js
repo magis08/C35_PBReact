@@ -1,7 +1,6 @@
 import TopBoard from "./TopBoard"
 import UserCard from "./UserCard"
 
-
 export default function MainBoard({keyword, setKeyword, sort, setSort, users, remove, edit}) {
     return (
         <div>

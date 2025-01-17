@@ -20,9 +20,9 @@ export default function TopBoard({ keyword, setKeyword, sort, setSort }) {
         <div className="barPosition">
             <button className="btn1" onClick={toggleSort}>
                 {sort === "asc" ? (
-                    <i className="fa-solid fa-arrow-down-a-z"></i>
-                ) : (
                     <i className="fa-solid fa-arrow-down-z-a"></i>
+                ) : (
+                    <i className="fa-solid fa-arrow-down-a-z"></i>
                 )}
             </button>
             <input

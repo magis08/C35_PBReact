@@ -14,15 +14,17 @@ const App = () => {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
+  const [pendingData, setPendingData] = useState(null);
 
   const loadMoreRef = useRef(null);
-
+  
   const readData = async (newPage) => {
     if (loading || (totalPage && newPage > totalPage)) return;
 
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:3000/api/phonebooks', {
+      const response = await axios.get(process.env.REACT_APP_API_URL, {
         params: {
           keyword,
           sortBy: 'name',
@@ -31,8 +33,6 @@ const App = () => {
           page: newPage,
         },
       });
-
-      console.log('Response:', response.data.phonebooks);
 
       const data = response.data.phonebooks;
       const totalPages = response.data.pages;
@@ -75,8 +75,7 @@ const App = () => {
       if (loadMoreRef.current) {
         observer.unobserve(loadMoreRef.current);
       }
-    }
-
+    };
   }, [loading, page, totalPage]);
 
   useEffect(() => {
@@ -90,26 +89,79 @@ const App = () => {
     readData(1);
   }, [keyword, sort]);
 
-  const PostUser = (name, phone) => {
-    axios.post('http://localhost:3000/api/phonebooks', { name, phone })
-      .then((response) => {
-        console.log('Data added:', response.data);
-        const newUser = response.data;
-
-        setUsers((prevUsers) => {
-          const updatedUsers = [newUser, ...prevUsers];
-          return updatedUsers
-            .sort((a, b) => sort === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name))
-            .filter(user => user.name.toLowerCase().includes(keyword.toLowerCase()));
+  const PostUser = (name, phone, onSuccess) => {
+    return new Promise((resolve, reject) => {
+      if (!name || !phone) {
+        console.error("Data tidak lengkap untuk dikirim.");
+        reject("Data tidak lengkap untuk dikirim.");
+        return;
+      }
+  
+      const newUser = { name, phone, status: 'pending' };
+      axios
+        .post(process.env.REACT_APP_API_URL, { name, phone })
+        .then((response) => {
+          const userData = response.data;
+          setUsers((prevUsers) => {
+            return prevUsers
+              .map((user) =>
+                user.name === name && user.phone === phone
+                  ? { ...user, status: 'sent' } 
+                  : user
+              );
+          });
+  
+          setPendingData(null);
+  
+          if (onSuccess) {
+            onSuccess();
+          }
+  
+          resolve();
+        })
+        .catch((error) => {
+          console.error("Data gagal ditambahkan", error);
+          alert("Data gagal ditambahkan. Simpan data untuk dikirim ulang.");
+          setPendingData(newUser); 
+  
+          reject(error);
         });
-      })
-      .catch(() => {
-        alert('Data gagal ditambahkan');
-      });
-  };
+    });
+  }; 
+  
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOffline(false);
+      console.log("Koneksi aktif, mencoba kirim data...");
+      
+      if (pendingData) {
+        console.log("Data tertunda ditemukan:", pendingData);
+        // Try to resend pending data
+        PostUser(pendingData.name, pendingData.phone, () => {
+          setPendingData(null); // Clear pending data after successful resend
+        });
+      }
+    };
+  
+    const handleOffline = () => {
+      setIsOffline(true);
+    };
+  
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+  
+    if (!navigator.onLine) {
+      setIsOffline(true); // Set status offline saat pertama kali mount
+    }
+  
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, [pendingData]);  
 
   const EditUser = (id, name, phone) => {
-    axios.put(`http://localhost:3000/api/phonebooks/${id}`, { name, phone })
+    axios.put(`${process.env.REACT_APP_API_URL}/${id}`, { name, phone })
       .then(() => {
         setUsers((prevUsers) => {
           const updatedUsers = prevUsers.map((user) => {
@@ -134,21 +186,18 @@ const App = () => {
   };
 
   const changeAvatar = (id, avatar) => {
-    axios.put(`http://localhost:3000/api/phonebooks/${id}/avatar`, avatar, {
+    axios.put(`${process.env.REACT_APP_API_URL}/${id}/avatar`, avatar, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     })
       .then((response) => {
-        console.log('Response data:', response.data);
-
         setUsers((prevUsers) => {
           return prevUsers.map((user) => {
             if (user.id === id) {
               const newAvatarUrl = response.data.avatar
                 ? `http://localhost:3000/images/${response.data.avatar}?timestamp=${new Date().getTime()}`
                 : null;
-              console.log('New avatar URL:', newAvatarUrl);
               return {
                 ...user,
                 avatar: newAvatarUrl,
@@ -165,7 +214,7 @@ const App = () => {
   };
 
   const removeUser = (id) => {
-    axios.delete(`http://localhost:3000/api/phonebooks/${id}`)
+    axios.delete(`${process.env.REACT_APP_API_URL}/${id}`)
       .then(() => {
         setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
       })
@@ -176,11 +225,11 @@ const App = () => {
     <Router>
       <Routes>
         <Route path='/' element={<MainBoard keyword={keyword} setKeyword={setKeyword} sort={sort} setSort={setSort} users={users} remove={removeUser} edit={EditUser} />}></Route>
-        <Route path='/add' element={<AddUser add={PostUser} />}></Route>
+        <Route path='/add' element={<AddUser add={PostUser} isOffline={isOffline} pendingData={pendingData}/>}></Route>
         <Route path='/avatar' element={<Avatar avatar={changeAvatar} />}></Route>
       </Routes>
 
-      <div ref={loadMoreRef} style={{ height: '20px', backgroundColor: 'lightgray' }}>
+      <div ref={loadMoreRef} style={{ height: '100%', backgroundColor: 'lightgray' }}>
         {loading && <p>'Loading...'</p>}
       </div>
     </Router>

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { Link } from 'react-router-dom';
-import defaultAvatar from '../assets/logo512.png';
 
 export default function UserData({ user, remove, edit }) {
 
@@ -34,7 +33,7 @@ export default function UserData({ user, remove, edit }) {
         return (
             <div className="userCard cardPosition">
                 <div>
-                    <img src={user?.avatar ? `http://localhost:3000/images/${user.avatar}` : defaultAvatar} alt='no source'></img>
+                    <img src={user?.avatar ? `http://localhost:3000/images/${user.avatar}` : `http://localhost:3000/images/default.jpg`} alt='no source'></img>
                 </div>
                 <div className="list2">
                     <p><input id='name' value={recentData.name} onChange={(e) => setRecentData({ ...recentData, name: e.target.value })}></input></p>
@@ -49,7 +48,7 @@ export default function UserData({ user, remove, edit }) {
         return (
             <div className="userCard cardPosition">
                 <Link to='/avatar' state={user} >
-                <img src={user?.avatar ? `http://localhost:3000/images/${user.avatar}` : defaultAvatar} alt='no source'></img>
+                <img src={user?.avatar ? `http://localhost:3000/images/${user.avatar}` : `http://localhost:3000/images/default.jpg`} alt='no source'></img>
                 </Link>
                 <div className="list">
                     <p>{user.name}</p>
